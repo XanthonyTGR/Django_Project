@@ -56,11 +56,9 @@ class Book(models.Model):
                                       '">ISBN number</a>')
     # ManyToManyField used because genre can contain many books. Books can cover many genres.
     # Genre class has already been defined, so we can specify the object above.
-    genres = models.ManyToManyField(
-        Genre,
-        help_text="Select a genre for this book")
+    genre = models.ManyToManyField(Genre, help_text="Select a genre for this book")
     language = models.ForeignKey(
-        Language,
+        'Language',
         on_delete=models.SET_NULL,
         null=True,
         help_text="Select the language of the book")
@@ -108,7 +106,7 @@ class BookInstance(models.Model):
 
     def __str__(self):
         """String for representing the Model object"""
-        return f' self(self.id ({self.book.title})'
+        return f' self({self.id} ({self.book.title})'
 
     def display_info(self):
         """Create a string with book information for the BookInstance list view."""
@@ -131,7 +129,7 @@ class Author(models.Model):
 
     def get_absolute_url(self):
         """Returns the URL to access a particular author instance."""
-        return reverse('author-detail', args=[str(self)])
+        return reverse('author-detail', args=[str(self.id)])
 
     def __str__(self):
         """String for representing the Model object."""

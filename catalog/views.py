@@ -1,6 +1,6 @@
 from django.shortcuts import render
 from django.contrib.auth.mixins import LoginRequiredMixin
-from django.views.generic import ListView
+from django.views import generic
 from .models import Book, Author, BookInstance, Genre
 
 
@@ -40,12 +40,32 @@ def index(request):
     return render(request, 'index.html', context=context)
 
 
-class LoanedBooksByUserListView(LoginRequiredMixin, ListView):
+class LoanedBooksByUserListView(LoginRequiredMixin, generic.ListView):
     """Generic class-based view listing books on loan to current user."""
     model = BookInstance
     template_name = 'catalog/bookinstance_list_borrowed_user.html'
     paginate_by = 10
 
     def get_queryset(self):
-        return BookInstance.objects.filter(borrower=self.request.user).filter(status__exact='o').order_by('due_back')
+        return (
+            BookInstance.objects.filter(borrower=self.request.user)
+            .filter(status__exact='o')
+            .order_by('due_back')
+        )
 
+
+class BookDetailView(generic.DetailView):
+    model = Book
+
+    def book_detail_view(request, primary_key):
+        try:
+            book = Book.objects.get(pk=primary_key)
+        except Book.DoesNotExist:
+            raise Http404('Book does not exist')
+
+        return render(request, 'catalog/book_detail.html', context={'book': book})
+
+
+class BookListView(generic.ListView):
+    model = Book
+    paginate_by = 10
