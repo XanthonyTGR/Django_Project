@@ -112,6 +112,7 @@ class BookInstance(models.Model):
         """Create a string with book information for the BookInstance list view."""
         return f'{self.book.title}, Status: {self.get_status_display()}, Due Back: {self.due_back}, ID: {self.id}'
 
+    @property
     def is_overdue(self):
         """Determines if the book is overdue based on the due date and current date."""
         return bool(self.due_back and date.today() > self.due_back)
